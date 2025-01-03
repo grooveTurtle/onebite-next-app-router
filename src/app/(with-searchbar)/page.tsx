@@ -7,7 +7,7 @@ async function AllBooks() {
   // 기본값은 cache를 사용하지 않게 되어있음. (15버전부터 바뀐 내용)
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`,
-    { cache: "no-store" }
+    { cache: "force-cache" }
   );
 
   if (!response.ok) {
