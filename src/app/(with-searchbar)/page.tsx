@@ -2,6 +2,15 @@ import BookItem from "@/components/book-item";
 import style from "./page.module.css";
 import { BookData } from "@/types";
 
+// 특정 페이지의 유형을 강제로 static 또는 dynamic으로 지정할 수 있음
+// *정말 특별한 상황이 아니면 그닥 사용을 권장하지 않음.
+// ** 테스트 용도로 사용해볼 수도 있을 것 같음.
+// 1. auto : 기본값, build 시점에 자동으로 결정
+// 2. force-dynamic : 페이지를 강제로 dynamic으로 설정
+// 3. force-static : 페이지를 강제로 static으로 설정 <- 실제 dynamic 페이지에 사용하면 기능이 제대로 동작하지 않을 수 있음.
+// 4. error : 페이지를 강제로 static으로 설정 <- dynamic 함수 등, dynamic 페이지로 판단되는 요소가 있다면 error 발생시킴
+// export const dynamic = "auto";
+
 async function AllBooks() {
   // no-store는 cache를 skip 함
   // 기본값은 cache를 사용하지 않게 되어있음. (15버전부터 바뀐 내용)
