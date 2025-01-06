@@ -1,6 +1,8 @@
 import BookItem from "@/components/book-item";
 import style from "./page.module.css";
 import { BookData } from "@/types";
+import { delay } from "@/util/delay";
+import { Suspense } from "react";
 
 // 특정 페이지의 유형을 강제로 static 또는 dynamic으로 지정할 수 있음
 // *정말 특별한 상황이 아니면 그닥 사용을 권장하지 않음.
@@ -14,6 +16,7 @@ import { BookData } from "@/types";
 async function AllBooks() {
   // no-store는 cache를 skip 함
   // 기본값은 cache를 사용하지 않게 되어있음. (15버전부터 바뀐 내용)
+  await delay(1500);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`,
     { cache: "force-cache" }
@@ -45,6 +48,7 @@ async function RecoBooks() {
 
   // 특정 시간을 주기로 캐시를 업데이트함
   // page router의 ISR 방식과 유사함.
+  await delay(3000);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/random`,
     { next: { revalidate: 3 } }
@@ -71,16 +75,23 @@ async function RecoBooks() {
   );
 }
 
+// dynamic 페이지로의 강제 설정
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div className={style.container}>
       <section>
         <h3>지금 추천하는 도서</h3>
-        <RecoBooks />
+        <Suspense fallback={<div>추천 도서를 불러오는 중입니다..</div>}>
+          <RecoBooks />
+        </Suspense>
       </section>
       <section>
         <h3>등록된 모든 도서</h3>
-        <AllBooks />
+        <Suspense fallback={<div>모든 도서를 불러오는 중입니다..</div>}>
+          <AllBooks />
+        </Suspense>
       </section>
     </div>
   );
