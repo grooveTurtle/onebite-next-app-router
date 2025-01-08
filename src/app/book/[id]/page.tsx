@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ReviewItem from "@/components/review-item";
 import ReviewEditor from "@/components/review-editor";
 import { delay } from "@/util/delay";
+import Image from "next/image";
 
 // generateStaticParams에서 return 한 값 외의 dynamic하게 처리하는 여부
 // false 일시, 1,2,3이외의 페이지는 404로 처리함.
@@ -33,7 +34,12 @@ async function BookDetail({ bookId }: { bookId: string }) {
         className={style.cover_img_container}
         style={{ backgroundImage: `url('${coverImgUrl}')` }}
       >
-        <img src={coverImgUrl} />
+        <Image
+          src={coverImgUrl}
+          width={240}
+          height={300}
+          alt={`도서 ${title}의 표지 이미지`}
+        />
       </div>
       <div className={style.title}>{title}</div>
       <div className={style.subTitle}>{subTitle}</div>
@@ -65,6 +71,35 @@ async function ReviewList({ bookId }: { bookId: string }) {
       ))}
     </section>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const p = await params;
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${p.id}`
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const book: BookData = await response.json();
+
+  // 현재 페이지의 메타 데이터를 동적으로 생성하는 역할을 합니다.
+  return {
+    title: `${book.title} - 한입 북스`,
+    description: `${book.description}`,
+    openGraph: {
+      title: `${book.title} - 한입 북스`,
+      description: `${book.description}`,
+      images: [book.coverImgUrl],
+    },
+  };
 }
 
 export default async function Page({

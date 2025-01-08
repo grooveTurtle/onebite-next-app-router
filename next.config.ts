@@ -7,6 +7,16 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  images: {
+    // domains: ["https://shopping-phinf.pstatic.net"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "shopping-phinf.pstatic.net",
+        pathname: "**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
