@@ -3,7 +3,6 @@ import style from "./page.module.css";
 import { notFound } from "next/navigation";
 import ReviewItem from "@/components/review-item";
 import ReviewEditor from "@/components/review-editor";
-import { delay } from "@/util/delay";
 import Image from "next/image";
 
 // generateStaticParams에서 return 한 값 외의 dynamic하게 처리하는 여부
@@ -11,8 +10,20 @@ import Image from "next/image";
 // export const dynamicParams = false;
 
 // page router의 getStaticPaths와 유사한 기능
-export function generateStaticParams() {
-  return [{ id: "1" }, { id: "2" }, { id: "3" }];
+export async function generateStaticParams() {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`
+  );
+
+  if (!response.ok) {
+    throw new Error(`Book fetch failed : ${response.statusText}`);
+  }
+
+  const books: BookData[] = await response.json();
+
+  return books.map((book) => ({
+    id: book.id.toString(),
+  }));
 }
 
 async function BookDetail({ bookId }: { bookId: string }) {
@@ -52,7 +63,6 @@ async function BookDetail({ bookId }: { bookId: string }) {
 }
 
 async function ReviewList({ bookId }: { bookId: string }) {
-  await delay(2000);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/book/${bookId}`,
     { next: { tags: [`review-${bookId}`] } }
